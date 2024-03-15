@@ -1,5 +1,12 @@
+import os
+import django
 import requests
-from models import Stock, StockData
+from datetime import datetime
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+django.setup()
+
+from backend.backend.models import Stock, StockData
 
 def fetch_apple_stock_data():
     with open('apikey.txt', 'r') as file:
@@ -18,7 +25,7 @@ def fetch_apple_stock_data():
     for date, values in data['Time Series (Daily)'].items():
         StockData.objects.create(
             stock=stock,
-            date=date,
+            date=datetime.strptime(date, '%Y-%m-%d').date(),
             open=values['1. open'],
             high=values['2. high'],
             low=values['3. low'],
