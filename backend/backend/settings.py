@@ -13,14 +13,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path  # Import the Path module from the pathlib package
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
-
-import django
-django.setup()
-
-# Remove the unused imports
-# from backend.models import Stock, StockData
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'backend',
-    'rest_framework',  # Add the missing import statement for the rest_framework module
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -130,3 +121,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+SECRET_KEY = 'f43e61ffa0fc8da799268b8a204e9949cffc472b39780f03'

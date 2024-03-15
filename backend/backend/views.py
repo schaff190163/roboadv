@@ -1,14 +1,16 @@
 from rest_framework import viewsets, permissions
 from .models import Stock, StockData, Portfolio, PortfolioStock
+from rest_framework import viewsets
 from .serializers import StockSerializer, StockDataSerializer, PortfolioSerializer, PortfolioStockSerializer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseNotAllowed
 import json
 
 class IsOwner(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, obj):
         return obj.user == request.user
 
 class StockViewSet(viewsets.ModelViewSet):
@@ -20,18 +22,16 @@ class StockDataViewSet(viewsets.ModelViewSet):
     serializer_class = StockDataSerializer
 
 class PortfolioViewSet(viewsets.ModelViewSet):
+    queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
-    permission_classes = [IsOwner]
-
-    def get_queryset(self):
-        return Portfolio.objects.filter(user=self.request.user)
 
 class PortfolioStockViewSet(viewsets.ModelViewSet):
+    queryset = PortfolioStock.objects.all()
     serializer_class = PortfolioStockSerializer
     permission_classes = [IsOwner]
 
     def get_queryset(self):
-        return PortfolioStock.objects.filter(portfolio__user=self.request.user)
+        return PortfolioStock.objects.filter(portfolio__user=self.user)
 
 @csrf_exempt
 def register(request):
@@ -41,9 +41,11 @@ def register(request):
         password = data.get('password')
         if not User.objects.filter(username=username).exists():
             User.objects.create_user(username, password=password)
-            return HttpResponse('User registered successfully')
+            return JsonResponse({'message': 'User registered successfully'}, status=201)
         else:
-            return HttpResponse('Username is already taken')
+            return JsonResponse({'error': 'Username is already taken'}, status=400)
+    else:
+        return HttpResponseNotAllowed(['POST'])
 
 @csrf_exempt
 def login_view(request):
@@ -54,10 +56,10 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponse('User logged in successfully')
+            return JsonResponse({'message': 'User logged in successfully'}, status=200)
         else:
-            return HttpResponse('Invalid username or password')
+            return JsonResponse({'error': 'Invalid username or password'}, status=401)
 
 def logout_view(request):
     logout(request)
-    return HttpResponse('User logged out successfully')
+    return JsonResponse({'message': 'User logged out successfully'}, status=200)

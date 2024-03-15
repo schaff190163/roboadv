@@ -1,10 +1,9 @@
 <script setup>
-import DisplayStocks from './components/DisplayStocks.vue'
 </script>
 
 <template>
-  <h1>TEST TEST TEST</h1>
-  <DisplayStocks />
+  <h1>This is an amazing App for viewing Stocks! :D</h1>
+  <routerlink to="/login">Login</routerlink>
 </template>
 
 <style scoped>
