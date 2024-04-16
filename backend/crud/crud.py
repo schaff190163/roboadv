@@ -1,68 +1,42 @@
-import logging
-
-from typing import List
-from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from crud.models import Portfolio, Stock
+from api.api_types import PortfolioCreate, PortfolioUpdate
+from api.api_types import StockCreate
 
-from crud.models import Base, Student
+class CRUD:
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
 
+    def create_portfolio(self, portfolio_data: PortfolioCreate, owner_id: int):
+        portfolio = Portfolio(**portfolio_data.dict(), owner_id=owner_id)
+        self.db_session.add(portfolio)
+        self.db_session.commit()
+        self.db_session.refresh(portfolio)
+        return portfolio
 
-class Crud:
-    def __init__(self, engine):
-        self._engine = engine
-        Base.metadata.create_all(self._engine)
+    def get_portfolio(self, portfolio_id: int):
+        return self.db_session.query(Portfolio).filter(Portfolio.id == portfolio_id).first()
 
-    def get(self, model: Base, sort_by: str = None) -> List[Base]:
-        self._check_model(model)
-        with Session(self._engine) as session:
-            query = session.query(model)
-            if sort_by:
-                query = query.order_by(getattr(model, sort_by))
-            return query.all()
+    def update_portfolio(self, portfolio_id: int, portfolio_data: PortfolioUpdate):
+        portfolio = self.get_portfolio(portfolio_id)
+        for key, value in portfolio_data.dict().items():
+            setattr(portfolio, key, value)
+        self.db_session.commit()
+        return portfolio
 
-    def get_single(self, model: Base, id: int) -> Base:
-        self._check_model(model)
-        with Session(self._engine) as session:
-            return session.query(model).get(id)
+    def delete_portfolio(self, portfolio_id: int):
+        portfolio = self.get_portfolio(portfolio_id)
+        self.db_session.delete(portfolio)
+        self.db_session.commit()
 
-    def search(self,
-               model: Base,
-               columns: List[str],
-               search_term: str) -> List[Base]:
-        self._check_model(model)
-        with Session(self._engine) as session:
-            search_terms = search_term.split(' ')
-            query = session.query(model)
-            for term in search_terms:
-                or_conditions = [getattr(model, column).ilike(f"%{term}%")
-                                 for column in columns]
-                query = query.filter(or_(*or_conditions))
-            return query.all()
+    def add_stock_to_portfolio(self, portfolio_id: int, stock_data: StockCreate):
+        stock = Stock(**stock_data.dict(), portfolio_id=portfolio_id)
+        self.db_session.add(stock)
+        self.db_session.commit()
+        self.db_session.refresh(stock)
+        return stock
 
-    def create(self, model: Base, data: dict) -> Base:
-        self._check_model(model)
-        try:
-            with Session(self._engine) as session:
-                instance = model(**data)
-                session.add(instance)
-                session.commit()
-                session.refresh(instance)
-                return instance
-        except Exception as e:
-            logging.error(e)
-            return None
-
-    def update(self, model: Base, id: int, data: dict) -> Base:
-        self._check_model(model)
-        with Session(self._engine) as session:
-            instance = session.query(model).get(id)
-            for key, value in data.items():
-                setattr(instance, key, value)
-            session.commit()
-            session.refresh(instance)
-            return instance
-
-    def _check_model(self, model):
-        if model not in [Student]:
-            raise TypeError(
-                f"Model {model} is not in the list of available models.")
+    def remove_stock_from_portfolio(self, portfolio_id: int, stock_id: int):
+        stock = self.db_session.query(Stock).filter(Stock.portfolio_id == portfolio_id, Stock.id == stock_id).first()
+        self.db_session.delete(stock)
+        self.db_session.commit()

@@ -17,12 +17,12 @@
   padding-top: calc(15px + 4vh);
 }
 h1 {
-  background: linear-gradient(to bottom, #0000 65%, #121d4e 50%);
+  background: linear-gradient(to bottom, #0000 65%, #1a2660 50%);
 }
 h1, h2, h3, h4, h5, h6 {
   color: #d2d2d2 !important;
 }
 html {
-  background-color: #222 !important;
+  background-color: #333 !important;
 }
 </style>

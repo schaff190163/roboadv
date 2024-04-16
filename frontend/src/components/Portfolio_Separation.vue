@@ -6,7 +6,6 @@
 import JSCharting from 'jscharting-vue';
 
 export default {
-   name: 'columnChart',
    data() {
       return {
          chartOptions: {
