@@ -3,8 +3,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from api.api_types import Portfolio, Stock
-from backend.crud.crud import Crud
-from backend.crud.engine import create_engine
+from crud.crud import Crud
+from crud.engine import create_engine
 import requests
 
 resources = {}
@@ -118,4 +118,4 @@ def get_stock_data_from_api(symbol: str) -> dict:
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run("main:app", host='0.0.0.0', port=5000, reload=True)
+    uvicorn.run("main:app", host='0.0.0.0', port=8000, reload=True)
