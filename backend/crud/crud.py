@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from crud.models import Portfolio, Stock
-from api.api_types import PortfolioCreate, PortfolioUpdate
-from api.api_types import StockCreate
+from api.api_types import PortfolioCreate, PortfolioUpdate, StockCreate
 
 class CRUD:
     def __init__(self, db_session: Session):

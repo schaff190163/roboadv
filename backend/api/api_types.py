@@ -23,6 +23,14 @@ class Stock(BaseModel):
     class Config:
         orm_mode = True
 
+class StockCreate(BaseModel):
+    symbol: str
+    shares: int
+ 
+class StockUpdate(BaseModel):
+    symbol: str
+    shares: int
+
 class Portfolio(BaseModel):
     id: int
     name: str

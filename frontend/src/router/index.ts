@@ -9,6 +9,11 @@ const router = createRouter({
       name: "dashboard",
       component: DashBoard,
     },
+    {
+      path: "/portfolio",
+      name: "portfolio",
+      component: PortfolioView,
+    },
   ],
 });
 
